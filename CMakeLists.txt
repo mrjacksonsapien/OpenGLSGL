@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(MyFirstOpenGL)
+project(OpenGLSGL)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -15,7 +15,7 @@ add_subdirectory(external/glfw)
 file(GLOB_RECURSE SRC_FILES src/*.cpp)
 
 # Add your executable
-add_executable(MyFirstOpenGL main.cpp src/glad.c ${SRC_FILES})
+add_executable(OpenGLSGL main.cpp src/glad.c ${SRC_FILES})
 
 # Link to glfw (target from their CMakeLists)
-target_link_libraries(MyFirstOpenGL glfw OpenGL32)
+target_link_libraries(OpenGLSGL glfw OpenGL32)
