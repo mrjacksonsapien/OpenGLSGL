@@ -1,9 +1,6 @@
-#ifndef MESH_HPP
-#define MESH_HPP
+#pragma once
 
 #include "Node.hpp"
 
 class Mesh : Node {
 };
-
-#endif

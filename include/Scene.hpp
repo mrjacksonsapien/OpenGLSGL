@@ -1,5 +1,4 @@
-#ifndef SCENE_HPP
-#define SCENE_HPP
+#pragma once
 
 #include <vector>
 #include "Mesh.hpp"
@@ -10,5 +9,3 @@ class Scene {
         std::vector<Mesh> meshes;
         Camera currentCamera;
 };
-
-#endif

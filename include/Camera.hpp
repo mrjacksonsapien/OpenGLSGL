@@ -1,5 +1,4 @@
-#ifndef CAMERA_HPP
-#define CAMERA_HPP
+#pragma once
 
 #include "Node.hpp"
 
@@ -9,5 +8,3 @@ class Camera : Node {
         float far;
         float fov;
 };
-
-#endif

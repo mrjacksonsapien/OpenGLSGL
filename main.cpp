@@ -3,11 +3,16 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
+// Resize buffer when the window is resized
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
+// Load shader source file as a string
 std::string loadShaderSource(const char *path) {
     std::ifstream file(path);
     std::stringstream buffer;
@@ -15,6 +20,7 @@ std::string loadShaderSource(const char *path) {
     return buffer.str();
 }
 
+// Compile the shader into OpenGL bytecode
 unsigned int compileShader(unsigned int type, const char *src) {
     unsigned int id = glCreateShader(type);
     glShaderSource(id, 1, &src, nullptr);
@@ -31,6 +37,7 @@ unsigned int compileShader(unsigned int type, const char *src) {
     return id;
 }
 
+// Create shader program (instructions set for GPU) to be used for rendering
 unsigned int createShaderProgram(const std::string &vertexPath, const std::string &fragmentPath) {
     std::string vertexCode = loadShaderSource(vertexPath.c_str());
     std::string fragmentCode = loadShaderSource(fragmentPath.c_str());
@@ -59,9 +66,9 @@ unsigned int createShaderProgram(const std::string &vertexPath, const std::strin
 }
 
 int main() {
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // Tell which version of OpenGL I'm using
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwInit(); // Start glfw
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // Tell glfw which major (latest) version of OpenGL I'm using
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); // Tell glfw which minor (lowest) version of OpenGL I'm using
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Tell glfw I'm using OpenGL core profile
 
     GLFWwindow* window = glfwCreateWindow(800, 800, "MyFirstOpenGL", nullptr, nullptr);
@@ -72,9 +79,9 @@ int main() {
     }
 
     glfwMakeContextCurrent(window); // Make window the current context for rendering
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); // Resize viewport when window resizes
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); // Set up the callback
 
-    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) { // Load OpenGL functions (at runtime)
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) { // Load OpenGL functions pointers (at runtime)
         std::cerr << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
@@ -87,16 +94,16 @@ int main() {
         0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f
     };
 
-    unsigned int indices[] = {
+    unsigned int indices[] = { // Define triangles
         0, 1, 2,
         0, 2, 3
     };
 
     // Create vertex array and buffers
     unsigned int VAO, VBO, EBO;
-    glGenVertexArrays(1, &VAO); // VAO for vertex attributes
-    glGenBuffers(1, &VBO); // VBO for vertices data
-    glGenBuffers(1, &EBO); // EBO for elements (triangles)
+    glGenVertexArrays(1, &VAO); // VAO for vertex attributes configurations (position, color, etc.)
+    glGenBuffers(1, &VBO); // VBO stores raw vertex data on GPU
+    glGenBuffers(1, &EBO); // EBO for elements (like triangles)
 
     // Bind buffers so subsequent calls affect them (state machine)
     glBindVertexArray(VAO);
@@ -104,14 +111,16 @@ int main() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); // VAO remembers this EBO
     
     // VBO data
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // Static draw for now since data is not updated
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // Static draw for now since data is not updated frequently
 
     // EBO data
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // VAO data. Attributes reference the currently binded VBO at creation.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); // Position
-    glEnableVertexAttribArray(0); // Pass id used as first argument during. Enables the data stream of that attribute.
+
+    // Parameters: index, size, type, normalized, stride, pointer
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); // Define how to interpret position
+    glEnableVertexAttribArray(0); // Pass index to enable it
 
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float))); // Color
     glEnableVertexAttribArray(1);
@@ -119,21 +128,53 @@ int main() {
     // Create shader program. Vertex runs for each vertex and fragment runs for each pixel/fragment
     unsigned int shaderProgram = createShaderProgram("../shaders/vertex.glsl", "../shaders/fragment.glsl");
 
+    glm::mat4 model = glm::mat4(1.0f); // Identity, no transformation
+    glm::mat4 view = glm::lookAt(
+        glm::vec3(0.0f, 0.0f, 3.0f), // Camera position
+        glm::vec3(0.0f, 0.0f, 0.0f), // Look at origin
+        glm::vec3(0.0f, 1.0f, 0.0f) // Up vector
+    );
+
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+
+    glm::mat4 projection = glm::perspective(
+        glm::radians(45.0f), // Field of view
+        (float)(width / height), // Aspect ration
+        0.1f, 100.0f // Near and far planes
+    );
+
+    glEnable(GL_DEPTH_TEST); // For proper 3D
+
     while (!glfwWindowShouldClose(window)) {
-        glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT); // Tell that you want to clear the color buffer (the screen)
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color and depth buffers
 
         glUseProgram(shaderProgram); // Activate the shader program
+
+        unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
+        unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
+        unsigned int projLoc = glGetUniformLocation(shaderProgram, "projection");
+
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
         glBindVertexArray(VAO); // Automatically binds it's EBO and the attributes for rendering
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // Draw EBO
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        model = glm::rotate(glm::mat4(1.0f), (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f)); // Testing rotation
     }
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+
     glfwDestroyWindow(window);
     glfwTerminate();
+
     return 0;
 }
