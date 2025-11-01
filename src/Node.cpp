@@ -2,15 +2,26 @@
 
 Node::Node(const Transform& transform) : dirtyFlags(DIRTY_ALL), transform(transform) {}
 
-void Node::setTransform(const Transform& t) {
+void Node::setTransform(Transform& t) {
     transform = t;
-    dirtyFlags |= DIRTY_TRANSFORM;
+    markDirty(DIRTY_TRANSFORM);
 }
 
-const uint32_t& Node::getDirtyFlags() const {
-    return dirtyFlags;
+const bool Node::isFlagDirty(DirtyFlags flag) const {
+    return (dirtyFlags & flag) != 0;
+}
+
+void Node::markDirty(DirtyFlags flag) {
+    dirtyFlags |= flag;
+}
+
+void Node::cleanFlag(DirtyFlags flag) {
+    dirtyFlags &= ~flag;
 }
 
 const Transform& Node::getTransform() const {
     return transform;
 }
+
+void Node::syncDataWithRenderingAPI() {}
+void Node::render() {}

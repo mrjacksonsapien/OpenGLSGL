@@ -9,14 +9,18 @@ class Node {
         Transform transform;
 
     protected:
-        /* 
-        transform is copied through the reference, member is not set to reference so dont worry.
-        If you would've put the member as Transform&, then it would put the reference inside instead of copying.
-        */
         Node(const Transform& transform);
+        const bool isFlagDirty(DirtyFlags flag) const;
+        void markDirty(DirtyFlags flag);
+        void cleanFlag(DirtyFlags flag);
 
     public:
-        void setTransform(const Transform& transform);
-        const uint32_t& getDirtyFlags() const; // First const means read-only return value, second const means can call this method on a const Node
+        virtual ~Node() = default;
+
         const Transform& getTransform() const;
+        void setTransform(Transform& transform);
+
+        // Optional implementations (only for things interacting with rendering API)
+        virtual void syncDataWithRenderingAPI();
+        virtual void render();
 };
