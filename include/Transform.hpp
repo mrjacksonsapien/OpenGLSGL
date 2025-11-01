@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 
 class Transform {
-    private:
-        glm::vec3 position, orientation, scale;
-        Transform(glm::vec3 position, glm::vec3 orientation, glm::vec3 scale);
+    public:
+        glm::vec3 position, rotation, scale;
+        Transform(glm::vec3& position, glm::vec3& rotation, glm::vec3& scale);
 };
