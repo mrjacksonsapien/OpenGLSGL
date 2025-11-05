@@ -33,7 +33,7 @@ PS: In this example, it assumes you're using MinGW for the compiler. If you use 
 
 ## Execute
 
-/build> `./OpenGLSGL`
+/> `./build/OpenGLSGL`
 
 ## Extras
 
@@ -45,8 +45,8 @@ PS: You might need to adjust the compiler path inside the `clangd.arguments` fie
 - https://open-vsx.org/extension/llvm-vs-code-extensions/vscode-clangd: Linter
 - https://open-vsx.org/extension/ms-vscode/cmake-tools: CMake automatic builder
 
-#### 2. Go on the CMakeLists.txt and save the file (Ctrl + S). It will build the project automatically. You might need to restart your IDE for clangd to correctly see the required files for linting.
+#### 2. Go on the CMakeLists.txt and save the file (Ctrl + S). It will generate the project CMake files automatically.
 
-#### 3. You can now build and run the project from the little buttons in the bottom bar of the IDE
+#### 3. You can now build and run the project from the little buttons in the bottom bar of the IDE. You will need to build the project at least once and restart your IDE so all errors are gone. This is because clangd expects some files to be present.
 
-![Build and run image](md_images/image.png)
+![Build and run image](doc_images/image.png)
