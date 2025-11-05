@@ -5,8 +5,27 @@ This project is a re-imagined version of the SGL engine made in JS for web brows
 
 **Warning: This project is for learning purpose of the OpenGL API, CMake tool and C++ language so it's not a fully optimized engine ready for use.**
 
-## Git instructions
+## Git instructions (IMPORTANT)
 
-Do all git cloning/fetching/pulling with this option to also get up-to-date submodules
+Do all git cloning/fetching/pulling with this option to also get up-to-date submodules since other third-party repositories are referenced in this project.
 
-`--recurse-submodules repo-url`
+`--recurse-submodules`
+
+## Build and run project
+
+PS: Make sure you have CMake and Makefile installed
+
+### 1. Set up CMake and build cmake files
+/> `mkdir build`
+
+/> `cd build`
+
+/build> `cmake -S .. -B .`
+
+/build> `cmake --build .`
+
+### 2. Build project
+
+/build> `make`
+
+/build> `./OpenGLSGL`
