@@ -7,6 +7,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "vertex_shader.h"
+#include "fragment_shader.h"
+
 // Resize buffer when the window is resized
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -37,7 +40,31 @@ unsigned int compileShader(unsigned int type, const char *src) {
     return id;
 }
 
-// Create shader program (instructions set for GPU) to be used for rendering
+// No more file loading
+unsigned int createShaderProgramFromMemory(const char* vertexSrc, const char* fragmentSrc) {
+    unsigned int vs = compileShader(GL_VERTEX_SHADER, vertexSrc);
+    unsigned int fs = compileShader(GL_FRAGMENT_SHADER, fragmentSrc);
+
+    unsigned int program = glCreateProgram();
+    glAttachShader(program, vs);
+    glAttachShader(program, fs);
+    glLinkProgram(program);
+
+    int success;
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    if (!success) {
+        char log[512];
+        glGetProgramInfoLog(program, 512, nullptr, log);
+        std::cerr << "Shader program linking error:\n" << log << std::endl;
+    }
+
+    glDeleteShader(vs);
+    glDeleteShader(fs);
+
+    return program;
+}
+
+// Create shader program from files at run time
 unsigned int createShaderProgram(const std::string &vertexPath, const std::string &fragmentPath) {
     std::string vertexCode = loadShaderSource(vertexPath.c_str());
     std::string fragmentCode = loadShaderSource(fragmentPath.c_str());
@@ -87,7 +114,6 @@ int main() {
     }
 
     float vertices[] = {
-        // Position         // Color
         -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
         -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
         0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
@@ -126,7 +152,7 @@ int main() {
     glEnableVertexAttribArray(1);
 
     // Create shader program. Vertex runs for each vertex and fragment runs for each pixel/fragment
-    unsigned int shaderProgram = createShaderProgram("../shaders/vertex.glsl", "../shaders/fragment.glsl");
+    unsigned int shaderProgram = createShaderProgramFromMemory(vertex_shader, fragment_shader);
 
     glm::mat4 model = glm::mat4(1.0f); // Identity, no transformation
     glm::mat4 view = glm::lookAt(

@@ -11,21 +11,42 @@ Do all git cloning/fetching/pulling with this option to also get up-to-date subm
 
 `--recurse-submodules`
 
-## Build and run project
+## Required tools for building the project
+- CMake
+- Make
+- Python
+- C/C++ compiler (MinGW preferably)
 
-PS: Make sure you have CMake and Makefile installed
+Those commands need to be executable from the current path
+
+## Build and run project (manually)
+
+PS: In this example, it assumes you're using MinGW for the compiler. If you use something else, you can change it inside the first command (replace "MinGW Makefiles" by your compiler).
 
 ### 1. Set up CMake and build cmake files
-/> `mkdir build`
 
-/> `cd build`
+/> `cmake -G "MinGW Makefiles" -S . -B build`
 
-/build> `cmake -S .. -B .`
+### 2. Build binary
 
-/build> `cmake --build .`
+/> `cmake --build build`
 
-### 2. Build project
-
-/build> `make`
+## Execute
 
 /build> `./OpenGLSGL`
+
+## Extras
+
+### Set up through VSCode/VSCodium
+
+PS: You might need to adjust the compiler path inside the `clangd.arguments` field in the `.vscode\settings.json` file for clangd to detect it correctly.
+
+#### 1. Make sure you have the following extensions installed:
+- https://open-vsx.org/extension/llvm-vs-code-extensions/vscode-clangd: Linter
+- https://open-vsx.org/extension/ms-vscode/cmake-tools: CMake automatic builder
+
+#### 2. Go on the CMakeLists.txt and save the file (Ctrl + S). It will build the project automatically. You might need to restart your IDE for clangd to correctly see the required files for linting.
+
+#### 3. You can now build and run the project from the little buttons in the bottom bar of the IDE
+
+![Build and run image](md_images/image.png)
