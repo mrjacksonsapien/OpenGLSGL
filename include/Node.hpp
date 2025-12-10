@@ -4,13 +4,12 @@
 #include "EngineFlags.hpp"
 
 class Node {
-    private:
-        uint32_t dirtyFlags;
-        Transform transform;
+    uint32_t dirtyFlags;
+    Transform transform;
 
     protected:
         Node(const Transform& transform);
-        const bool isFlagDirty(DirtyFlags flag) const;
+        bool isFlagDirty(DirtyFlags flag) const;
         void markDirty(DirtyFlags flag);
         void cleanFlag(DirtyFlags flag);
 
@@ -18,7 +17,7 @@ class Node {
         virtual ~Node() = default;
 
         const Transform& getTransform() const;
-        void setTransform(Transform& transform);
+        void setTransform(const Transform& newTransform);
 
         // Optional implementations (only for things interacting with rendering API)
         virtual void syncDataWithRenderingAPI();

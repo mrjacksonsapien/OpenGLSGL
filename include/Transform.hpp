@@ -5,5 +5,5 @@
 class Transform {
     public:
         glm::vec3 position, rotation, scale;
-        Transform(glm::vec3& position, glm::vec3& rotation, glm::vec3& scale);
+        Transform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale);
 };
