@@ -12,7 +12,7 @@ include_directories(external/glm)
 add_subdirectory(external/glfw)
 
 # Collect all .cpp files
-file(GLOB_RECURSE SRC_FILES src/*.cpp)
+file(GLOB_RECURSE SRC_FILES src/*.cpp src/glad/*.src)
 
 # === Embed shaders at build time ===
 
@@ -48,7 +48,7 @@ add_custom_target(embed_shaders ALL DEPENDS ${GENERATED_SHADER_HEADERS})
 
 # === Build executable ===
 
-add_executable(OpenGLSGL main.cpp src/glad.c ${SRC_FILES})
+add_executable(OpenGLSGL main.cpp src/glad/glad.c ${SRC_FILES})
 
 add_dependencies(OpenGLSGL embed_shaders)
 
