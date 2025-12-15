@@ -1,4 +1,5 @@
 /build
 # /.vscode
+# /.zed
 .cache
 cmake-build-debug
