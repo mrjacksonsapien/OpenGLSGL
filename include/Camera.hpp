@@ -3,8 +3,7 @@
 #include "Node.hpp"
 
 class Camera : Node {
-    private:
-        float near;
-        float far;
-        float fov;
+    float near;
+    float far;
+    float fov;
 };

@@ -5,7 +5,6 @@
 #include "Camera.hpp"
 
 class Scene {
-    private:
-        std::vector<Mesh> meshes;
-        Camera currentCamera;
+    std::vector<Mesh> meshes;
+    Camera currentCamera;
 };
